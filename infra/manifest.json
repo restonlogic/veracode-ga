@@ -1,0 +1,21 @@
+{
+  "global_config": {
+    "name": "veracodega",
+    "environment": "mgmtga",
+    "region": "us-east-1",
+    "vpc_cidr": "10.0.0.0/16",
+    "organization": "restonlogic"
+  },
+  "git_config": {
+    "gitops_address": "github.com",
+    "gitops_org": "restonlogic",
+    "gitops_repo": "veracode-ga",
+    "gitops_branch": "main"
+  },
+  "github_actions": {
+    "action": "apply"
+  },
+  "microservices": [
+    "counter-service"
+  ]
+}

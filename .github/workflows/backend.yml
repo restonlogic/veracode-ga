@@ -1,0 +1,69 @@
+name: backend-pipeline
+# Run workflow only when committing to frontend directory
+on:
+  push:
+    branches:
+      - main
+    #paths:
+    #  - "aws/k3s-terraform-cluster/microservices/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    # The image this workflow works on
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GA_IAM_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-duration-seconds: 1200
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Github Repository
+        uses: actions/checkout@v4
+
+      - name: Export Variables
+        run: |
+          cd infra
+          echo "NAME=$(jq '.global_config.name' -r manifest.json)" >> $GITHUB_ENV
+          echo "ENV=$(jq '.global_config.environment' -r manifest.json)" >> $GITHUB_ENV
+          echo "ORG=$(jq '.global_config.organization' -r manifest.json)" >> $GITHUB_ENV
+          echo "AWS_REGION=$(jq '.global_config.region' -r manifest.json)" >> $GITHUB_ENV
+          echo "image=counter-service" >> $GITHUB_ENV
+          echo "build_tag=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: DEBUG2
+        run: |
+          echo ${{ secrets.VERACODE_API_ID }}  | sed 's/./& /g'
+          echo ${{ secrets.VERACODE_API_KEY }} | sed 's/./& /g'
+
+      - name: ZIP source folder
+        run: |
+          pwd
+          echo $image
+          echo $build_tag
+          cd microservices/$image
+          zip -r app.zip app
+
+      - name: DEBUG3
+        run: |
+          echo ${image}-build-${build_tag}
+          ls microservices/${image}/app.zip
+
+      - name: Run Veracode Static Code Analysis
+        uses: veracode/veracode-uploadandscan-action@0.2.6
+        with:
+          appname: $image
+          version: ${image}-build-${build_tag}
+          createprofile: true
+          filepath: microservices/${image}/app.zip
+          scantimeout: 30
+          criticality: medium
+          debug: true
+          vid: ${{ secrets.VERACODE_API_ID }}
+          vkey: ${{ secrets.VERACODE_API_KEY }}
