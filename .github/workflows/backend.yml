@@ -57,6 +57,7 @@ jobs:
 
       - name: Run Veracode Static Code Analysis
         uses: veracode/veracode-uploadandscan-action@0.2.6
+        id: SCA
         with:
           appname: $image
           version: ${image}-build-${build_tag}
@@ -71,13 +72,13 @@ jobs:
       - name: Capture Output
         uses: 'selfagency/capture-output@v1'
         with:
-           cmd: echo
+           cmd: echo ${{join(steps.SCA.outputs.*, '\n')}}
            args: "Capture the output of the Veracode Static Code Analysis step"
            hide-warnings: true
            fail: false
-           file: ${{ github.workspace }}/output.txt
+           file: ${{ github.workspace }}/sca.txt
            
       - name: Extract Specific Line
         run: |
-           line=$(tac ${{ github.workspace }}/output.txt | grep -m 1 'The status of the new analysis is' ${{ github.workspace }}/output.txt)
+           line=$(tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is' ${{ github.workspace }}/sca.txt)
            echo "::set-output name=analysis_status::$line"
