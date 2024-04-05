@@ -79,5 +79,5 @@ jobs:
            
       - name: Extract Specific Line
         run: |
-           line=$(grep -m 1 'The status of the new analysis is' ${{ github.workspace }}/output.txt)
+           line=$(tac ${{ github.workspace }}/output.txt | grep -m 1 'The status of the new analysis is' ${{ github.workspace }}/output.txt)
            echo "::set-output name=analysis_status::$line"
