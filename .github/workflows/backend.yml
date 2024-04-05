@@ -86,3 +86,4 @@ jobs:
             rm ${{ github.workspace }}/sca.txt
           else
             echo "File does not exist"
+          fi
