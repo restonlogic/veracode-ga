@@ -81,4 +81,4 @@ jobs:
       - name: Extract Specific Line
         run: |
            line=$(tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is')
-           echo "::set-output name=analysis_status::$line"
+           echo "::set-output name=analysis_status::${{line}}"
