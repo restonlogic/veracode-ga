@@ -84,6 +84,3 @@ jobs:
             tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is'
           else
             echo "File does not exist"
-           #line=$(tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is')
-           
-           #echo "::set-output name=analysis_status:: " $line
