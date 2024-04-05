@@ -69,20 +69,5 @@ jobs:
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
 
-      - name: Capture Output
-        uses: 'selfagency/capture-output@v1'
-        with:
-           cmd: echo ${{ steps.SCA.outputs.stdout }}
-           args: "Capture the output of the Veracode Static Code Analysis step"
-           hide-warnings: true
-           fail: false
-           file: ${{ github.workspace }}/sca.txt
-           
       - name: Extract Specific Line
-        run: |
-          ls -ld /bin
-          if [ -f ${{ github.workspace }}/sca.txt ]; then
-            echo tac ${{ github.workspace }}/sca.txt| grep -m 1 'The status of the new analysis is'
-          else
-            echo "File does not exist"
-          fi
+        run: echo ${{ steps.SCA.outputs.stdout }}
