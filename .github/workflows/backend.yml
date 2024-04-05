@@ -72,7 +72,7 @@ jobs:
       - name: Capture Output
         uses: 'selfagency/capture-output@v1'
         with:
-           cmd: echo ${{join(steps.SCA.outputs.*, '\n')}}
+           cmd: echo ${{ steps.SCA.outputs.stdout }}
            args: "Capture the output of the Veracode Static Code Analysis step"
            hide-warnings: true
            fail: false
@@ -80,7 +80,10 @@ jobs:
            
       - name: Extract Specific Line
         run: |
-          tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is'
+          if [ -f ${{ github.workspace }}/sca.txt ]; then
+            tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is'
+          else
+            echo "File does not exist"
            #line=$(tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is')
            
            #echo "::set-output name=analysis_status:: " $line
