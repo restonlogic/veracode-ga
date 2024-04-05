@@ -81,6 +81,8 @@ jobs:
       - name: Extract Specific Line
         run: |
           if [ -f ${{ github.workspace }}/sca.txt ]; then
-            tac ${{ github.workspace }}/sca.txt | grep -m 1 'The status of the new analysis is'
+            results=$(cat ${{ github.workspace }}/sca.txt)
+            echo tac $results | grep -m 1 'The status of the new analysis is'
+            rm ${{ github.workspace }}/sca.txt
           else
             echo "File does not exist"
