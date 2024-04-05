@@ -70,4 +70,4 @@ jobs:
           vkey: ${{ secrets.VERACODE_API_KEY }}
 
       - name: Extract Specific Line
-        run: echo ${{ steps.SCA.outputs.stdout }}
+        run: echo ${{ steps.SCA.outputs.SCA_results }}
