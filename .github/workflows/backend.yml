@@ -68,11 +68,16 @@ jobs:
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
 
-      - name: Create ServiceNow Change Request
-        uses: ServiceNow/servicenow-devops-change@v3.1.0
+      - name: Capture Output
+        uses: 'selfagency/capture-output@v1'
         with:
-          devops-integration-token: ${{ secrets.SN_DEVOPS_INTEGRATION_TOKEN }}
-          instance-url: ${{ secrets.SN_INSTANCE_URL }}
-          tool-id: ${{ secrets.SN_ORCHESTRATION_TOOL_ID }}
-          context-github: ${{ toJSON(github) }}
-          job-name: 'Create ServiceNow Change Request'
+           cmd: echo
+           args: "Capture the output of the Veracode Static Code Analysis step"
+           hide-warnings: true
+           fail: false
+           file: ${{ github.workspace }}/output.txt
+           
+      - name: Extract Specific Line
+        run: |
+           line=$(grep -m 1 'The status of the new analysis is' ${{ github.workspace }}/output.txt)
+           echo "::set-output name=analysis_status::$line"
